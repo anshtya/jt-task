@@ -1,0 +1,33 @@
+<resources>
+    <string name="sample_task">Sample task</string>
+    <string name="new_task_sample_task">Pehle hum ek sample task karte h</string>
+    <string name="new_task_start_sample_task">Start Sample Task</string>
+
+    <string name="check_ambient_noise_heading">Test Ambient Noise Level</string>
+    <string name="check_ambient_noise_description">Before you start the call we will have to check your ambience noise level</string>
+    <string name="check_ambient_noise_start_test">Start Test</string>
+
+    <string name="select_task">Select task</string>
+    <string name="select_task_heading">Select task type</string>
+    <string name="select_task_text_reading">Text Reading Task</string>
+    <string name="select_task_image_description">Image Description Task</string>
+    <string name="select_task_photo_capture">Photo Capture Task</string>
+
+    <string name="task_list_task_history">Task History</string>
+    <string name="task_list_work_report">Work Report</string>
+    <string name="task_list_total_tasks">Total Tasks</string>
+    <string name="task_list_duration_recorded">Duration Recorded</string>
+    <string name="task_list_tasks">Tasks</string>
+
+    <string name="record_task_topbar_heading">Recording Task</string>
+    <string name="record_task_text_heading">Read the passage aloud in your native language.</string>
+    <string name="record_task_image_heading">Describe what you see in your native language.</string>
+    <string name="record_task_photo_heading">Describe the photo in your language.</string>
+    <string name="record_task_record_description">Press and hold to record</string>
+    <string name="record_task_check_text">Before submitting listen audio and check these or else rerecord the message</string>
+    <string name="record_task_check_noise">This audio has no background noise</string>
+    <string name="record_task_check_mistakes">Passage has no mistakes in words and reading</string>
+    <string name="record_task_check_galti">Beech me koi galti nahi h</string>
+    <string name="record_task_record_again">Record again</string>
+    <string name="record_task_submit">Submit</string>
+</resources>
