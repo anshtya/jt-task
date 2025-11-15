@@ -17,5 +17,8 @@ sealed interface AppDestination {
     data class RecordTaskScreen(val taskType: TaskType): AppDestination
 
     @Serializable
+    data object Camera: AppDestination
+
+    @Serializable
     data object TaskList: AppDestination
 }

@@ -2,14 +2,14 @@ package com.anshtya.taskrecorder
 
 import android.app.Application
 import com.anshtya.taskrecorder.di.AppModule
+import com.anshtya.taskrecorder.platform.camera.CameraModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import org.koin.ksp.generated.module
 
-class TaskRecorderApplication: Application(), KoinComponent {
+class TaskRecorderApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
@@ -18,6 +18,7 @@ class TaskRecorderApplication: Application(), KoinComponent {
             androidContext(this@TaskRecorderApplication)
             modules(
                 AppModule().module,
+                CameraModule().module
             )
         }
     }

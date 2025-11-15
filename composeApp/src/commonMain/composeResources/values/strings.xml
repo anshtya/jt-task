@@ -23,6 +23,7 @@
     <string name="record_task_text_heading">Read the passage aloud in your native language.</string>
     <string name="record_task_image_heading">Describe what you see in your native language.</string>
     <string name="record_task_photo_heading">Describe the photo in your language.</string>
+    <string name="record_task_recording">Recording...</string>
     <string name="record_task_record_description">Press and hold to record</string>
     <string name="record_task_check_text">Before submitting listen audio and check these or else rerecord the message</string>
     <string name="record_task_check_noise">This audio has no background noise</string>
@@ -30,4 +31,5 @@
     <string name="record_task_check_galti">Beech me koi galti nahi h</string>
     <string name="record_task_record_again">Record again</string>
     <string name="record_task_submit">Submit</string>
+    <string name="record_task_retake_photo">Retake</string>
 </resources>

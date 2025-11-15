@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.anshtya.taskrecorder.data.model.Task
 import com.anshtya.taskrecorder.data.model.TaskType
+import com.anshtya.taskrecorder.util.getLocalDateTime
 import kotlinx.datetime.LocalDateTime
 
 @Entity(tableName = "task")
@@ -25,7 +26,7 @@ data class TaskEntity(
     @ColumnInfo(name = "duration_sec")
     val durationSec: Int,
 
-    val timestamp: LocalDateTime
+    val timestamp: LocalDateTime = getLocalDateTime()
 )
 
 fun TaskEntity.toModel(): Task {

@@ -4,22 +4,31 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.anshtya.taskrecorder.data.model.AudioResult
 import com.anshtya.taskrecorder.data.model.TaskType
 import com.anshtya.taskrecorder.data.repository.TaskRepository
+import com.anshtya.taskrecorder.di.IoDispatcher
+import com.anshtya.taskrecorder.platform.audio.AudioRecorder
+import com.anshtya.taskrecorder.platform.data.ImageManager
 import com.anshtya.taskrecorder.ui.navigation.AppDestination
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class RecordTaskViewModel(
     savedStateHandle: SavedStateHandle,
-    private val taskRepository: TaskRepository
-): ViewModel() {
+    private val taskRepository: TaskRepository,
+    private val audioRecorder: AudioRecorder,
+    private val imageManager: ImageManager,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : ViewModel() {
     val taskType = savedStateHandle.toRoute<AppDestination.RecordTaskScreen>().taskType
 
     private val _uiState = MutableStateFlow(RecordTaskUiState())
@@ -28,8 +37,8 @@ class RecordTaskViewModel(
     private val _taskState = MutableStateFlow<TaskState>(TaskState.Loading)
     val taskState = _taskState.asStateFlow()
 
-    private val _errorMessage = Channel<String>(Channel.BUFFERED)
-    val errorMessage = _errorMessage.receiveAsFlow()
+    private val _event = Channel<RecordTaskEvent>(Channel.BUFFERED)
+    val event = _event.receiveAsFlow()
 
     init {
         viewModelScope.launch {
@@ -43,31 +52,150 @@ class RecordTaskViewModel(
                 val text = taskRepository.getText()
                 _taskState.update { TaskState.TextReading(text) }
             }
+
             TaskType.IMAGE_DESCRIPTION -> {
                 val image = taskRepository.getImage()
                 _taskState.update { TaskState.ImageDescription(image) }
             }
+
             TaskType.PHOTO_CAPTURE -> {
                 _taskState.update { TaskState.PhotoCapture }
             }
         }
     }
 
+    fun onCheckClick(position: Int) {
+        val checkBoxes = _uiState.value.checkBoxes.toMutableSet().apply {
+            if (!add(position)) remove(position)
+        }
+        _uiState.update {
+            it.copy(checkBoxes = checkBoxes)
+        }
+    }
+
+    fun setCapturedPhoto(path: String) {
+        _uiState.update {
+            it.copy(capturedPhotoPath = path)
+        }
+    }
+
+    fun onStartRecording() {
+        viewModelScope.launch {
+            val recordingPath = withContext(ioDispatcher) {
+                audioRecorder.startRecording()
+            }
+            _uiState.update {
+                it.copy(recordingPath = recordingPath)
+            }
+        }
+    }
+
+    fun onStopRecording() {
+        audioRecorder.stopRecording()
+        _uiState.update {
+            it.copy(isLoading = true)
+        }
+        _uiState.value.recordingPath?.let { path ->
+            when (audioRecorder.validateAudio(path)) {
+                AudioResult.Long -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            recordingPath = null
+                        )
+                    }
+                    _event.trySend(
+                        RecordTaskEvent.Error("Recording too long (max 20s)")
+                    )
+                }
+
+                AudioResult.Short -> {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            recordingPath = null
+                        )
+                    }
+                    _event.trySend(
+                        RecordTaskEvent.Error("Recording too short (min 10s)")
+                    )
+                }
+
+                AudioResult.Ok -> _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRecorded = true
+                    )
+                }
+            }
+        }
+    }
+
     fun onRerecordClick() {
         _uiState.update {
-            it.copy(recording = null)
+            it.copy(
+                isRecorded = false,
+                recordingPath = null
+            )
+        }
+    }
+
+    fun onSubmitClick() {
+        viewModelScope.launch {
+            val recordingPath = _uiState.value.recordingPath ?: return@launch
+
+            val savedPhotoPath = _uiState.value.capturedPhotoPath?.let {
+                withContext(ioDispatcher) {
+                    imageManager.saveImage(it)
+                }
+            }
+            val savedRecordingPath = withContext(ioDispatcher) {
+                audioRecorder.saveAudio(recordingPath)
+            }
+            when (taskType) {
+                TaskType.TEXT_READING -> {
+                    taskRepository.saveTask(
+                        type = taskType,
+                        text = (_taskState.value as TaskState.TextReading).description,
+                        imagePath = null,
+                        audioPath = savedRecordingPath,
+                    )
+                }
+
+                TaskType.IMAGE_DESCRIPTION -> {
+                    taskRepository.saveTask(
+                        type = taskType,
+                        text = null,
+                        imagePath = (_taskState.value as TaskState.ImageDescription).image,
+                        audioPath = savedRecordingPath,
+                    )
+                }
+
+                TaskType.PHOTO_CAPTURE -> {
+                    taskRepository.saveTask(
+                        type = taskType,
+                        text = null,
+                        imagePath = savedPhotoPath,
+                        audioPath = savedRecordingPath,
+                    )
+                }
+            }
+            _event.send(RecordTaskEvent.TaskSubmitted)
         }
     }
 }
 
 data class RecordTaskUiState(
-    val recording: String? = null,
+    val isLoading: Boolean = false,
+    val isRecorded: Boolean = false,
+    val recordingPath: String? = null,
+    val capturedPhotoPath: String? = null,
     val checkBoxes: Set<Int> = emptySet()
 )
 
 sealed interface TaskState {
-    data object Loading: TaskState
-    data class TextReading(val description: String): TaskState
-    data class ImageDescription(val image: String): TaskState
-    data object PhotoCapture: TaskState
+    data object Loading : TaskState
+    data class TextReading(val description: String) : TaskState
+    data class ImageDescription(val image: String) : TaskState
+    data object PhotoCapture : TaskState
 }

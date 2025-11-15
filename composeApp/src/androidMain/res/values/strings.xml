@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">TaskRecorder</string>
+
+    <!--Permission-->
+    <string name="permission_cancel">Cancel</string>
+    <string name="permission_grant">Grant Permission</string>
+
+    <string name="record_permission_title">Microphone permission required</string>
+    <string name="record_permission_denied">Microphone permission is required to record audio. Please grant the permission.</string>
+
+    <string name="camera_permission_title">Camera permission required</string>
+    <string name="camera_permission_denied">Camera permission is required to capture photos. Please grant the permission.</string>
+    <string name="camera_permission_allow">Tap to allow camera permission.</string>
+
+    <string name="camera_capture_description">Tap to capture photo</string>
 </resources>

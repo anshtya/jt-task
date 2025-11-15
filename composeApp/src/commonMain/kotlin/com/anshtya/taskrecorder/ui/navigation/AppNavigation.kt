@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.anshtya.taskrecorder.platform.camera.CameraScreen
 import com.anshtya.taskrecorder.ui.screens.CheckAmbientNoiseScreen
 import com.anshtya.taskrecorder.ui.screens.NewTaskScreen
 import com.anshtya.taskrecorder.ui.screens.TaskSelectionScreen
@@ -42,9 +43,25 @@ fun AppNavigation(
                 onBackClick = navController::navigateUp
             )
         }
-        composable<AppDestination.RecordTaskScreen> {
+        composable<AppDestination.RecordTaskScreen> { backStackEntry ->
+            val capturePhotoPath = backStackEntry.savedStateHandle.get<String?>("photo")
             RecordTaskRoute(
-                onNavigateUp = navController::navigateUp
+                capturedPhotoPath = capturePhotoPath,
+                onNavigateUp = navController::navigateUp,
+                onNavigateToCamera = {
+                    navController.navigate(AppDestination.Camera)
+                },
+                onNavigateToTaskHistory = {
+                    navController.navigateOnSaveTask()
+                }
+            )
+        }
+        composable<AppDestination.Camera> {
+            CameraScreen(
+                onNavigateToTask = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("photo", it)
+                    navController.popBackStack()
+                }
             )
         }
         composable<AppDestination.TaskList> {

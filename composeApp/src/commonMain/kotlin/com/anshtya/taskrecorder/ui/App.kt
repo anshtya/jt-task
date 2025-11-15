@@ -15,8 +15,11 @@ import androidx.compose.ui.Modifier
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
+import com.anshtya.taskrecorder.di.AppModule
 import com.anshtya.taskrecorder.ui.navigation.AppNavigation
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinApplication
+import org.koin.ksp.generated.module
 
 @Composable
 @Preview
@@ -39,7 +42,15 @@ fun App() {
                         .build()
                 }
 
-                AppNavigation()
+                KoinApplication(
+                    application = {
+                        modules(
+                            AppModule().module,
+                        )
+                    }
+                ) {
+                    AppNavigation()
+                }
             }
         }
     }
