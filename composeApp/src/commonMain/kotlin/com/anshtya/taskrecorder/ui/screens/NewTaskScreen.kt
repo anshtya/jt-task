@@ -15,17 +15,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.anshtya.taskrecorder.ui.theme.MainTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import taskrecorder.composeapp.generated.resources.Res
@@ -39,12 +38,7 @@ fun NewTaskScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            )
+            TopAppBar(title = {})
         }
     ) { paddingValues ->
         Box(
@@ -74,7 +68,6 @@ fun NewTaskScreen(
                 Text(
                     text = stringResource(Res.string.new_task_sample_task),
                     textAlign = TextAlign.Center,
-                    color = Color.DarkGray,
                     modifier = Modifier.width(150.dp)
                 )
             }
@@ -99,7 +92,7 @@ fun NewTaskScreen(
 @Preview
 @Composable
 private fun NewTaskScreenPreview() {
-    MaterialTheme {
+    MainTheme {
         NewTaskScreen (
             onStartTaskClick = {}
         )

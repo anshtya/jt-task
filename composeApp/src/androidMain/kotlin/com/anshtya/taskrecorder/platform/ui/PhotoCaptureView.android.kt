@@ -74,28 +74,34 @@ actual fun PhotoCaptureView(
         )
     }
 
-    Box(modifier.fillMaxSize()) {
-        if (!checkPermissionGranted(context, Manifest.permission.CAMERA)) {
+    if (!checkPermissionGranted(context, Manifest.permission.CAMERA)) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .clickable { permissionLauncher.launch(Manifest.permission.CAMERA) }
+        ) {
             Text(
                 text = stringResource(id = R.string.camera_permission_allow),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .clickable { permissionLauncher.launch(Manifest.permission.CAMERA) }
+                modifier = Modifier.align(Alignment.Center)
             )
-        } else if (capturedPhoto != null) {
-            AsyncImage(
-                model = capturedPhoto,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
+        }
+    } else if (capturedPhoto != null) {
+        AsyncImage(
+            model = capturedPhoto,
+            contentDescription = null,
+            modifier = modifier.fillMaxSize()
+        )
+    } else {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .clickable { launchCamera = true }
+        ) {
             Text(
                 text = stringResource(id = R.string.camera_capture_description),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .clickable { launchCamera = true }
+                modifier = Modifier.align(Alignment.Center)
             )
         }
     }

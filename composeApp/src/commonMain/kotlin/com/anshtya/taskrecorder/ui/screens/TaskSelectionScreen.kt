@@ -16,7 +16,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anshtya.taskrecorder.data.model.TaskType
 import com.anshtya.taskrecorder.ui.components.BackButton
+import com.anshtya.taskrecorder.ui.theme.MainTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import taskrecorder.composeapp.generated.resources.Res
@@ -48,12 +48,8 @@ fun TaskSelectionScreen(
                     )
                 },
                 navigationIcon = {
-                    BackButton(tint = MaterialTheme.colorScheme.onPrimary) { onBackClick() }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    BackButton { onBackClick() }
+                }
             )
         }
     ) { paddingValues ->
@@ -122,7 +118,7 @@ private fun TaskCard(
 @Preview
 @Composable
 private fun TaskSelectionScreenPreview() {
-    MaterialTheme { 
+    MainTheme {
         TaskSelectionScreen(
             onTaskClick = {},
             onBackClick = {}

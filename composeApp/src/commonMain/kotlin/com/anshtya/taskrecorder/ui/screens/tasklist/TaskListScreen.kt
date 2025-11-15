@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +37,7 @@ import com.anshtya.taskrecorder.data.model.Task
 import com.anshtya.taskrecorder.data.model.TaskData
 import com.anshtya.taskrecorder.data.model.TaskType
 import com.anshtya.taskrecorder.ui.components.BackButton
+import com.anshtya.taskrecorder.ui.theme.MainTheme
 import com.anshtya.taskrecorder.util.getDisplayDate
 import com.anshtya.taskrecorder.util.getDisplayTime
 import kotlinx.datetime.LocalDateTime
@@ -76,12 +77,8 @@ private fun TaskListScreen(
                     Text(text = stringResource(Res.string.task_list_task_history))
                 },
                 navigationIcon = {
-                    BackButton(tint = MaterialTheme.colorScheme.onPrimary) { onBackClick() }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    BackButton { onBackClick() }
+                }
             )
         }
     ) { paddingValues ->
@@ -91,8 +88,9 @@ private fun TaskListScreen(
                 .fillMaxSize()
         ) {
             LazyColumn(
+                contentPadding = PaddingValues(vertical = 10.dp),
                 modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                    .padding(horizontal = 20.dp)
                     .fillMaxWidth()
             ) {
                 workReport(
@@ -138,7 +136,6 @@ private fun LazyListScope.workReport(
                     )
                     Text(
                         text = stringResource(Res.string.task_list_total_tasks),
-                        color = Color.DarkGray,
                         modifier = Modifier.width(48.dp)
                     )
                 }
@@ -158,7 +155,6 @@ private fun LazyListScope.workReport(
                     )
                     Text(
                         text = stringResource(Res.string.task_list_duration_recorded),
-                        color = Color.DarkGray,
                         modifier = Modifier.width(80.dp)
                     )
                 }
@@ -218,7 +214,6 @@ private fun TaskCard(
             )
             Text(
                 text = "Duration ${task.duration}sec | ${task.timestamp.getDisplayDate()} | ${task.timestamp.getDisplayTime()}",
-                color = Color.DarkGray
             )
             if (expanded) {
                 when (task.type) {
@@ -241,7 +236,7 @@ private fun TaskCard(
 @Preview
 @Composable
 private fun TaskListScreenPreview() {
-    MaterialTheme {
+    MainTheme {
         TaskListScreen(
             taskData = TaskData(
                 tasks = listOf(

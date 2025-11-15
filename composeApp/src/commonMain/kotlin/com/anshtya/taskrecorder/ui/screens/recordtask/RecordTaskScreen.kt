@@ -25,7 +25,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,6 +42,7 @@ import com.anshtya.taskrecorder.platform.ui.PhotoCaptureView
 import com.anshtya.taskrecorder.platform.ui.PlayRecordingView
 import com.anshtya.taskrecorder.platform.ui.RecordingView
 import com.anshtya.taskrecorder.ui.components.BackButton
+import com.anshtya.taskrecorder.ui.theme.MainTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -123,12 +123,8 @@ private fun RecordTaskScreen(
                     Text(text = stringResource(Res.string.record_task_topbar_heading))
                 },
                 navigationIcon = {
-                    BackButton(tint = MaterialTheme.colorScheme.onPrimary) { onBackClick() }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    BackButton { onBackClick() }
+                }
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) }
@@ -204,10 +200,7 @@ private fun ImageDescriptionTask(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        Text(
-            text = stringResource(Res.string.record_task_image_heading),
-            color = Color.Gray
-        )
+        Text(text = stringResource(Res.string.record_task_image_heading))
         Surface(
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
@@ -231,12 +224,9 @@ private fun PhotoCaptureTask(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = stringResource(Res.string.record_task_photo_heading),
-            color = Color.Gray
-        )
+        Text(text = stringResource(Res.string.record_task_photo_heading))
         PhotoCaptureView(
             capturedPhoto = capturedPhoto,
             onNavigateToCamera = onNavigateToCamera,
@@ -272,15 +262,12 @@ private fun TextReadingTask(
     ) {
         Text(
             text = stringResource(Res.string.record_task_text_heading),
-            color = Color.DarkGray,
             fontSize = 18.sp
         )
         Surface(
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, Color.Gray),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = description,
@@ -429,7 +416,7 @@ private fun RecordingCheckListItem(
 @Preview
 @Composable
 private fun RecordTaskScreenPreview() {
-    MaterialTheme {
+    MainTheme {
         RecordTaskScreen(
             uiState = RecordTaskUiState(),
             taskState = TaskState.TextReading("text"),

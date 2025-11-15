@@ -74,7 +74,7 @@ fun RecordingButtonView(
             } else {
                 stringResource(Res.string.record_task_record_description)
             },
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodyLarge
         )
     }
 }

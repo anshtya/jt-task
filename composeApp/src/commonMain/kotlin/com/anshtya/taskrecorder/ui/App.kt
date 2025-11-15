@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.crossfade
 import com.anshtya.taskrecorder.di.AppModule
 import com.anshtya.taskrecorder.ui.navigation.AppNavigation
+import com.anshtya.taskrecorder.ui.theme.MainTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinApplication
 import org.koin.ksp.generated.module
@@ -24,7 +24,7 @@ import org.koin.ksp.generated.module
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    MainTheme {
         Scaffold(
             contentWindowInsets = ScaffoldDefaults
                 .contentWindowInsets
