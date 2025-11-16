@@ -123,26 +123,28 @@ fun CheckAmbientNoiseScreen(
                     )
                 }
                 message?.let {
-                    OutlinedButton(
-                        onClick = {
-                            message = null
-                            startTest = false
-                            checkNoise = true
-                        },
-                        border = BorderStroke(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.check_ambient_noise_check_again),
-                            fontWeight = FontWeight.SemiBold,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
+                    if (startTest) {
+                        OutlinedButton(
+                            onClick = {
+                                message = null
+                                startTest = false
+                                checkNoise = true
+                            },
+                            border = BorderStroke(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            shape = RoundedCornerShape(10.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.check_ambient_noise_check_again),
+                                fontWeight = FontWeight.SemiBold,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                     }
                     Text(
                         text = it,
