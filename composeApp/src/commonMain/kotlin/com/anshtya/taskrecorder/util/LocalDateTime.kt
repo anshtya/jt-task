@@ -26,7 +26,7 @@ fun LocalDateTime.getDisplayTime(): String {
     val format = LocalDateTime.Format {
         hour()
         char(':')
-        second()
+        minute()
     }
     return this.format(format)
 }
