@@ -12,5 +12,9 @@ interface AudioRecorder {
 
     fun saveAudio(tmpPath: String): String
 
+    suspend fun checkAverageNoise(
+        onEachData: (Float) -> Unit
+    ): Int
+
     fun validateAudio(path: String): AudioResult
 }

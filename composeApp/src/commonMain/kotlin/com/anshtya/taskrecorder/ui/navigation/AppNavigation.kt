@@ -29,8 +29,12 @@ fun AppNavigation(
         }
         composable<AppDestination.CheckAmbientNoise> {
             CheckAmbientNoiseScreen(
-                onStartClick = {
-                    navController.navigate(AppDestination.TaskSelection)
+                onStartTestClick = {
+                    navController.navigate(AppDestination.TaskSelection) {
+                        popUpTo(AppDestination.CheckAmbientNoise) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onBackClick = navController::navigateUp
             )

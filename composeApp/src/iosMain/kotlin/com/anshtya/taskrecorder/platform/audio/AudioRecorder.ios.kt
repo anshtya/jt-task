@@ -16,6 +16,10 @@ class IosAudioRecorder(): AudioRecorder {
         TODO("Not yet implemented")
     }
 
+    override suspend fun checkAverageNoise(onEachData: (Float) -> Unit): Int {
+        TODO("Not yet implemented")
+    }
+
     override fun validateAudio(path: String): AudioResult {
         TODO("Not yet implemented")
     }

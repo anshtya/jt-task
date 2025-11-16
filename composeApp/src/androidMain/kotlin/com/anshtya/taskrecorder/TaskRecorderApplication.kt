@@ -2,7 +2,7 @@ package com.anshtya.taskrecorder
 
 import android.app.Application
 import com.anshtya.taskrecorder.di.AppModule
-import com.anshtya.taskrecorder.platform.camera.CameraModule
+import com.anshtya.taskrecorder.platform.di.AndroidPlatformModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -18,7 +18,7 @@ class TaskRecorderApplication : Application() {
             androidContext(this@TaskRecorderApplication)
             modules(
                 AppModule().module,
-                CameraModule().module
+                AndroidPlatformModule().module
             )
         }
     }

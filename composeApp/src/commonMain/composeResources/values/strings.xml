@@ -3,9 +3,11 @@
     <string name="new_task_sample_task">Pehle hum ek sample task karte h</string>
     <string name="new_task_start_sample_task">Start Sample Task</string>
 
+    <string name="check_ambient_noise">Check Ambient Noise</string>
     <string name="check_ambient_noise_heading">Test Ambient Noise Level</string>
     <string name="check_ambient_noise_description">Before you start the call we will have to check your ambience noise level</string>
     <string name="check_ambient_noise_start_test">Start Test</string>
+    <string name="check_ambient_noise_check_again">Check again</string>
 
     <string name="select_task">Select task</string>
     <string name="select_task_heading">Select task type</string>
