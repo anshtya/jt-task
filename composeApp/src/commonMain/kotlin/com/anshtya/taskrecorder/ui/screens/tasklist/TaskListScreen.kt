@@ -213,7 +213,7 @@ private fun TaskCard(
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = "Duration ${task.duration}sec | ${task.timestamp.getDisplayDate()} | ${task.timestamp.getDisplayTime()}",
+                text = "Duration ${task.duration ?: 0}sec | ${task.timestamp.getDisplayDate()} | ${task.timestamp.getDisplayTime()}",
             )
             if (expanded) {
                 when (task.type) {
@@ -226,6 +226,9 @@ private fun TaskCard(
                             model = task.imagePath,
                             contentDescription = null
                         )
+                        task.text?.let {
+                            Text(text = it)
+                        }
                     }
                 }
             }

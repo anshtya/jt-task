@@ -19,12 +19,12 @@ data class TaskEntity(
     val imagePath: String? = null,
 
     @ColumnInfo(name = "audio_path")
-    val audioPath: String,
+    val audioPath: String?,
 
     val text: String? = null,
 
     @ColumnInfo(name = "duration_sec")
-    val durationSec: Int,
+    val durationSec: Int?,
 
     val timestamp: LocalDateTime = getLocalDateTime()
 )

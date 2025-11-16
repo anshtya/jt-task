@@ -4,21 +4,26 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -28,12 +33,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,6 +61,7 @@ import taskrecorder.composeapp.generated.resources.record_task_check_galti
 import taskrecorder.composeapp.generated.resources.record_task_check_mistakes
 import taskrecorder.composeapp.generated.resources.record_task_check_noise
 import taskrecorder.composeapp.generated.resources.record_task_check_text
+import taskrecorder.composeapp.generated.resources.record_task_describe_photo
 import taskrecorder.composeapp.generated.resources.record_task_image_heading
 import taskrecorder.composeapp.generated.resources.record_task_photo_heading
 import taskrecorder.composeapp.generated.resources.record_task_record_again
@@ -83,9 +94,10 @@ fun RecordTaskRoute(
         onStartRecording = viewModel::onStartRecording,
         onStopRecording = viewModel::onStopRecording,
         onRerecordClick = viewModel::onRerecordClick,
+        onDescriptionChange = viewModel::onDescriptionChange,
         onNavigateToCamera = onNavigateToCamera,
-        onSubmitClick = viewModel::onSubmitClick,
         onTaskSubmit = onNavigateToTaskHistory,
+        onSubmitClick = viewModel::onSubmitClick,
         onBackClick = onNavigateUp
     )
 }
@@ -100,6 +112,7 @@ private fun RecordTaskScreen(
     onStartRecording: () -> Unit,
     onStopRecording: () -> Unit,
     onRerecordClick: () -> Unit,
+    onDescriptionChange: (String) -> Unit,
     onNavigateToCamera: () -> Unit,
     onTaskSubmit: () -> Unit,
     onSubmitClick: () -> Unit,
@@ -132,60 +145,66 @@ private fun RecordTaskScreen(
         Box(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxWidth()
         ) {
-            Column(
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
+                item {
+                    when (taskState) {
+                        TaskState.Loading -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                            ) {
+                                CircularProgressIndicator(Modifier.align(Alignment.Center))
+                            }
+                        }
 
-                when (taskState) {
-                    TaskState.Loading -> {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp)
-                        ) {
-                            CircularProgressIndicator(Modifier.align(Alignment.Center))
+                        is TaskState.ImageDescription -> {
+                            ImageDescriptionTask(
+                                image = taskState.image,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        TaskState.PhotoCapture -> {
+                            PhotoCaptureTask(
+                                description = uiState.description,
+                                capturedPhoto = uiState.capturedPhotoPath,
+                                onDescriptionChange = onDescriptionChange,
+                                onNavigateToCamera = onNavigateToCamera,
+                                recorded = uiState.isRecorded,
+                                onSubmitClick = onSubmitClick,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        is TaskState.TextReading -> {
+                            TextReadingTask(
+                                description = taskState.description,
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
                     }
-
-                    is TaskState.ImageDescription -> {
-                        ImageDescriptionTask(
-                            image = taskState.image,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    TaskState.PhotoCapture -> {
-                        PhotoCaptureTask(
-                            capturedPhoto = uiState.capturedPhotoPath,
-                            onNavigateToCamera = onNavigateToCamera,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    is TaskState.TextReading -> {
-                        TextReadingTask(
-                            description = taskState.description,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
                 }
-                RecordingPreview(
-                    recordingFilePath = uiState.recordingPath,
-                    recorded = uiState.isRecorded,
-                    isLoading = uiState.isLoading,
-                    checked = uiState.checkBoxes,
-                    onCheckClick = onCheckClick,
-                    onStartRecording = onStartRecording,
-                    onStopRecording = onStopRecording,
-                    onRerecordClick = onRerecordClick,
-                    onSubmitClick = onSubmitClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                item {
+                    RecordingPreview(
+                        recordingFilePath = uiState.recordingPath,
+                        recorded = uiState.isRecorded,
+                        isLoading = uiState.isLoading,
+                        checked = uiState.checkBoxes,
+                        onCheckClick = onCheckClick,
+                        onStartRecording = onStartRecording,
+                        onStopRecording = onStopRecording,
+                        onRerecordClick = onRerecordClick,
+                        onSubmitClick = onSubmitClick,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -218,7 +237,11 @@ private fun ImageDescriptionTask(
 
 @Composable
 private fun PhotoCaptureTask(
+    description: String,
+    recorded: Boolean,
     capturedPhoto: String?,
+    onDescriptionChange: (String) -> Unit,
+    onSubmitClick: () -> Unit,
     onNavigateToCamera: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -235,17 +258,60 @@ private fun PhotoCaptureTask(
                 .height(200.dp)
         )
         capturedPhoto?.let {
-            Button(
-                onClick = onNavigateToCamera,
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .height(48.dp)
-            ) {
-                Text(
-                    text = stringResource(Res.string.record_task_retake_photo),
-                    style = MaterialTheme.typography.bodyLarge
+            var textFieldValue by remember {
+                mutableStateOf(
+                    TextFieldValue(
+                        text = description,
+                        selection = TextRange(description.length)
+                    )
                 )
+            }
+            OutlinedTextField(
+                value = textFieldValue,
+                placeholder = {
+                    Text(text = stringResource(Res.string.record_task_describe_photo))
+                },
+                onValueChange = {
+                    textFieldValue = it
+                    onDescriptionChange(it.text)
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                FilledTonalButton(
+                    onClick = onNavigateToCamera,
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .weight(0.5f)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.record_task_retake_photo),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                if (!recorded) {
+                    Button(
+                        onClick = onSubmitClick,
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .weight(0.5f)
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.record_task_submit),
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
             }
         }
     }
@@ -425,6 +491,7 @@ private fun RecordTaskScreenPreview() {
             onStartRecording = {},
             onStopRecording = {},
             onRerecordClick = {},
+            onDescriptionChange = {},
             onNavigateToCamera = {},
             onTaskSubmit = {},
             onSubmitClick = {}

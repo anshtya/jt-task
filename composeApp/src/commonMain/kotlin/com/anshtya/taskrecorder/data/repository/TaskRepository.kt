@@ -27,7 +27,7 @@ class TaskRepository(
     val taskData: Flow<TaskData> = taskDao.getAllTasks()
         .flatMapLatest { tasks ->
             val totalTasks = tasks.size
-            val totalSeconds = tasks.sumOf { it.durationSec }
+            val totalSeconds = tasks.sumOf { it.durationSec ?: 0 }
 
             flowOf(
                 TaskData(
@@ -53,7 +53,7 @@ class TaskRepository(
         type: TaskType,
         text: String?,
         imagePath: String?,
-        audioPath: String
+        audioPath: String?
     ) {
         taskDao.insertTask(
             TaskEntity(
@@ -61,7 +61,7 @@ class TaskRepository(
                 audioPath = audioPath,
                 imagePath = imagePath,
                 text = text,
-                durationSec = getAudioDuration(audioPath),
+                durationSec = audioPath?.let { getAudioDuration(it) }
             )
         )
     }

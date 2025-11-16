@@ -140,23 +140,32 @@ class RecordTaskViewModel(
         }
     }
 
+    fun onDescriptionChange(text: String) {
+        _uiState.update {
+            it.copy(description = text)
+        }
+    }
+
     fun onSubmitClick() {
         viewModelScope.launch {
-            val recordingPath = _uiState.value.recordingPath ?: return@launch
+            val uiState = _uiState.value
+            val taskState = _taskState.value
 
-            val savedPhotoPath = _uiState.value.capturedPhotoPath?.let {
+            val savedPhotoPath = uiState.capturedPhotoPath?.let {
                 withContext(ioDispatcher) {
                     imageManager.saveImage(it)
                 }
             }
-            val savedRecordingPath = withContext(ioDispatcher) {
-                audioRecorder.saveAudio(recordingPath)
+            val savedRecordingPath = uiState.recordingPath?.let {
+                withContext(ioDispatcher) {
+                    audioRecorder.saveAudio(it)
+                }
             }
             when (taskType) {
                 TaskType.TEXT_READING -> {
                     taskRepository.saveTask(
                         type = taskType,
-                        text = (_taskState.value as TaskState.TextReading).description,
+                        text = (taskState as TaskState.TextReading).description,
                         imagePath = null,
                         audioPath = savedRecordingPath,
                     )
@@ -166,7 +175,7 @@ class RecordTaskViewModel(
                     taskRepository.saveTask(
                         type = taskType,
                         text = null,
-                        imagePath = (_taskState.value as TaskState.ImageDescription).image,
+                        imagePath = (taskState as TaskState.ImageDescription).image,
                         audioPath = savedRecordingPath,
                     )
                 }
@@ -174,7 +183,7 @@ class RecordTaskViewModel(
                 TaskType.PHOTO_CAPTURE -> {
                     taskRepository.saveTask(
                         type = taskType,
-                        text = null,
+                        text = uiState.description.ifBlank { null },
                         imagePath = savedPhotoPath,
                         audioPath = savedRecordingPath,
                     )
@@ -190,6 +199,7 @@ data class RecordTaskUiState(
     val isRecorded: Boolean = false,
     val recordingPath: String? = null,
     val capturedPhotoPath: String? = null,
+    val description: String = "",
     val checkBoxes: Set<Int> = emptySet()
 )
 

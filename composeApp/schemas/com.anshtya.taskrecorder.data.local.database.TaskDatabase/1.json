@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2b814727a5d1c9b2eb6e327378704944",
+    "identityHash": "c91aaa49713a026e592d236fe19bc89a",
     "entities": [
       {
         "tableName": "task",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `image_path` TEXT, `audio_path` TEXT NOT NULL, `text` TEXT, `duration_sec` INTEGER NOT NULL, `timestamp` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` TEXT NOT NULL, `image_path` TEXT, `audio_path` TEXT, `text` TEXT, `duration_sec` INTEGER, `timestamp` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -28,8 +28,7 @@
           {
             "fieldPath": "audioPath",
             "columnName": "audio_path",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "text",
@@ -39,8 +38,7 @@
           {
             "fieldPath": "durationSec",
             "columnName": "duration_sec",
-            "affinity": "INTEGER",
-            "notNull": true
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "timestamp",
@@ -59,7 +57,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2b814727a5d1c9b2eb6e327378704944')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c91aaa49713a026e592d236fe19bc89a')"
     ]
   }
 }
